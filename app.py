@@ -1,4 +1,3 @@
-# app.py - COMPLETE WORKING VERSION
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 import pandas as pd
 import numpy as np
@@ -247,9 +246,6 @@ class ProductRecommender:
         except:
             return self.get_dummy_recommendations(n_recommendations)
 
-
-# ==================== DATA LOADING ====================
-
 def load_data():
     try:
         csv_files = [
@@ -466,7 +462,6 @@ recommender = ProductRecommender(df)
 # Create error pages
 create_error_pages()
 
-
 # Start background monitoring
 def background_monitoring():
     while True:
@@ -482,7 +477,6 @@ def background_monitoring():
 
 monitor_thread = threading.Thread(target=background_monitoring, daemon=True)
 monitor_thread.start()
-
 
 # ==================== ROUTES ====================
 
@@ -515,7 +509,6 @@ def index():
 
     return render_template('index.html', stats=stats, chart_files=chart_files)
 
-
 # ==================== MONITORING ROUTES ====================
 
 @app.route('/monitoring')
@@ -527,7 +520,6 @@ def monitoring_page():
                            monitored_products=monitored_products,
                            alerts=alerts,
                            total_alerts=len(price_monitor.alerts))
-
 
 @app.route('/api/monitor/add', methods=['POST'])
 def add_to_monitor():
@@ -554,7 +546,6 @@ def add_to_monitor():
         'message': 'Product added to monitoring' if success else 'Failed to add product'
     })
 
-
 @app.route('/api/monitor/remove', methods=['POST'])
 def remove_from_monitor():
     data = request.json
@@ -565,7 +556,6 @@ def remove_from_monitor():
 
     return jsonify({'success': True, 'message': 'Product removed from monitoring'})
 
-
 @app.route('/api/monitor/alerts')
 def get_alerts():
     alerts = price_monitor.get_alerts(20)
@@ -574,7 +564,6 @@ def get_alerts():
         'alerts': alerts,
         'total': len(price_monitor.alerts)
     })
-
 
 # ==================== RECOMMENDATIONS ROUTES ====================
 
@@ -587,7 +576,6 @@ def recommendations_page():
                            sample_products=sample_products,
                            categories=categories,
                            ml_available=ML_AVAILABLE)
-
 
 @app.route('/api/recommend/similar', methods=['POST'])
 def recommend_similar():
@@ -605,7 +593,6 @@ def recommend_similar():
         'recommendations': recommendations,
         'count': len(recommendations)
     })
-
 
 @app.route('/api/recommend/price-range', methods=['POST'])
 def recommend_by_price():
@@ -630,7 +617,6 @@ def recommend_by_price():
         'count': len(recommendations)
     })
 
-
 @app.route('/api/recommend/train', methods=['POST'])
 def train_model():
     if not ML_AVAILABLE:
@@ -641,7 +627,6 @@ def train_model():
         'success': success,
         'message': 'Model trained successfully' if success else 'Failed to train model'
     })
-
 
 @app.route('/api/recommend/stats')
 def recommendation_stats():
@@ -658,7 +643,6 @@ def recommendation_stats():
     }
 
     return jsonify({'success': True, 'stats': stats})
-
 
 # ==================== OTHER ROUTES ====================
 
@@ -712,7 +696,6 @@ def products():
                            max_price=max_price,
                            platforms=platforms)
 
-
 @app.route('/analysis')
 def analysis():
     # Calculate analysis statistics
@@ -764,7 +747,6 @@ def analysis():
                            stats=stats,
                            total_products=len(df))
 
-
 @app.route('/database')
 def database_view():
     # Get data summary
@@ -781,7 +763,6 @@ def database_view():
         summary['platform_distribution'] = platform_dist
 
     return render_template('database.html', summary=summary)
-
 
 @app.route('/generate_all_charts')
 def generate_all_charts():
@@ -812,7 +793,6 @@ def generate_all_charts():
             'message': str(e)
         })
 
-
 @app.route('/refresh_data')
 def refresh_data():
     global df, price_monitor, recommender
@@ -831,7 +811,6 @@ def refresh_data():
             'message': str(e)
         })
 
-
 # ==================== ERROR HANDLERS ====================
 
 @app.errorhandler(404)
@@ -842,7 +821,6 @@ def page_not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return render_template('500.html', error=str(e)), 500
-
 
 # ==================== MAIN ====================
 

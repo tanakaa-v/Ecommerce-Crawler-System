@@ -1,4 +1,3 @@
-# analysis.py - COMPLETE DATA ANALYSIS MODULE
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -33,16 +32,15 @@ except ImportError:
 
 
 class DataAnalyzer:
-    """Complete Data Analysis Module for E-commerce Data"""
+    #Complete Data Analysis Module for E-commerce Data
 
     def __init__(self, data_source='data/all_products.csv', use_database=False):
-        """
-        Initialize analyzer with data source
+        #Initialize analyzer with data source
 
-        Args:
-            data_source: CSV file path or database connection
-            use_database: If True, connect to MySQL database
-        """
+        #Args:
+            #data_source: CSV file path or database connection
+            #use_database: If True, connect to MySQL database
+
         print("=" * 60)
         print("📊 E-COMMERCE DATA ANALYSIS MODULE")
         print("=" * 60)
@@ -60,7 +58,7 @@ class DataAnalyzer:
         self.load_data()
 
     def load_data(self):
-        """Load data from CSV or database"""
+        #Load data from CSV or database
         print("\n📥 LOADING DATA...")
 
         try:
@@ -89,7 +87,7 @@ class DataAnalyzer:
             self._create_sample_data()
 
     def _load_from_database(self):
-        """Load data from MySQL database"""
+        #Load data from MySQL database
         try:
             from database import MySQLDatabase
 
@@ -114,7 +112,7 @@ class DataAnalyzer:
                 self.df = pd.read_csv(self.data_source, encoding='utf-8')
 
     def _create_sample_data(self):
-        """Create sample data for demonstration"""
+        #Create sample data for demonstration
         print("📝 Creating sample analysis data...")
 
         # Sample data for demonstration
@@ -173,7 +171,7 @@ class DataAnalyzer:
         print(f"✅ Created {len(self.df)} sample products for analysis")
 
     def _clean_data(self):
-        """Clean and prepare data for analysis"""
+        #Clean and prepare data for analysis
         print("🧹 Cleaning data...")
 
         # Ensure numeric columns
@@ -214,7 +212,7 @@ class DataAnalyzer:
         print("✅ Data cleaning complete")
 
     def _show_data_summary(self):
-        """Show summary of loaded data"""
+        #Show summary of loaded data
         print("\n📋 DATA SUMMARY:")
         print("-" * 40)
 
@@ -244,14 +242,14 @@ class DataAnalyzer:
     # ==================== PRICE DISTRIBUTION ANALYSIS ====================
 
     def analyze_price_distribution(self, platform_filter=None):
-        """
-        Analyze price distribution
 
-        Args:
-            platform_filter: Filter by platform (e.g., 'Amazon', 'JD.com')
+        #Analyze price distribution
 
-        Returns: Dict with analysis results
-        """
+        #Args:
+            #platform_filter: Filter by platform (e.g., 'Amazon', 'JD.com')
+
+        #Returns: Dict with analysis results
+
         print(f"\n💰 PRICE DISTRIBUTION ANALYSIS")
         print("-" * 40)
 
@@ -312,7 +310,7 @@ class DataAnalyzer:
         return results
 
     def _plot_price_distribution(self, df, platform_filter=None):
-        """Create price distribution visualization"""
+        #Create price distribution visualization
         try:
             plt.figure(figsize=(12, 5))
 
@@ -366,15 +364,15 @@ class DataAnalyzer:
     # ==================== SENTIMENT ANALYSIS ====================
 
     def analyze_sentiment(self, text_column='review_text', platform_filter=None):
-        """
-        Perform sentiment analysis on text data
 
-        Args:
-            text_column: Column containing text to analyze
-            platform_filter: Filter by platform
+        #Perform sentiment analysis on text data
 
-        Returns: Dict with sentiment analysis results
-        """
+        #Args:
+            #text_column: Column containing text to analyze
+            #platform_filter: Filter by platform
+
+        #Returns: Dict with sentiment analysis results
+
         print(f"\n😊 SENTIMENT ANALYSIS")
         print("-" * 40)
 
@@ -448,7 +446,7 @@ class DataAnalyzer:
         return results
 
     def _get_sentiment_score(self, text):
-        """Get sentiment score for text (positive, neutral, negative)"""
+        #Get sentiment score for text (positive, neutral, negative)
         # Simple rule-based sentiment as fallback
         positive_words = ['great', 'excellent', 'good', 'best', 'love', 'awesome',
                           'perfect', 'recommend', 'happy', 'satisfied', 'amazing']
@@ -469,7 +467,7 @@ class DataAnalyzer:
             return 0.0
 
     def _add_sample_review_text(self, df):
-        """Add sample review text for sentiment analysis demonstration"""
+        #Add sample review text for sentiment analysis demonstration
         sample_reviews = [
             "Excellent product, very satisfied with the quality!",
             "Good value for money, works as expected.",
@@ -488,7 +486,7 @@ class DataAnalyzer:
             print("  Added sample review text for analysis")
 
     def _plot_sentiment_analysis(self, results, platform_filter=None):
-        """Create sentiment analysis visualization"""
+        #Create sentiment analysis visualization
         try:
             plt.figure(figsize=(10, 5))
 
@@ -534,11 +532,10 @@ class DataAnalyzer:
     # ==================== BRAND/CATEGORY STATISTICS ====================
 
     def analyze_brand_category_stats(self, platform_filter=None):
-        """
-        Analyze brand and category statistics
 
-        Returns: Dict with brand and category analysis
-        """
+        #Analyze brand and category statistics
+        #Returns: Dict with brand and category analysis
+
         print(f"\n🏷️ BRAND & CATEGORY STATISTICS")
         print("-" * 40)
 
@@ -614,7 +611,7 @@ class DataAnalyzer:
         return results
 
     def _plot_brand_category_stats(self, df, platform_filter=None):
-        """Create brand and category visualization"""
+        #Create brand and category visualization
         try:
             fig, axes = plt.subplots(2, 2, figsize=(14, 10))
 
@@ -677,14 +674,14 @@ class DataAnalyzer:
     # ==================== PRICE TREND ANALYSIS ====================
 
     def analyze_price_trends(self, days_back=30):
-        """
-        Analyze price trends over time
 
-        Args:
-            days_back: Number of days to look back
+        #Analyze price trends over time
 
-        Returns: Dict with price trend analysis
-        """
+        #Args:
+            #days_back: Number of days to look back
+
+        #Returns: Dict with price trend analysis
+
         print(f"\n📈 PRICE TREND ANALYSIS (Last {days_back} days)")
         print("-" * 40)
 
@@ -711,7 +708,7 @@ class DataAnalyzer:
         return results
 
     def _simulate_price_trends(self, days_back):
-        """Simulate price trends for demonstration"""
+        #Simulate price trends for demonstration
         # In a real system, this would query the price_history table
         # For now, we create simulated data
 
@@ -802,7 +799,7 @@ class DataAnalyzer:
     # ==================== COMPREHENSIVE ANALYSIS ====================
 
     def run_comprehensive_analysis(self):
-        """Run all analysis modules and generate report"""
+        #Run all analysis modules and generate report
         print("\n" + "=" * 60)
         print("🎯 RUNNING COMPREHENSIVE ANALYSIS")
         print("=" * 60)
@@ -823,7 +820,7 @@ class DataAnalyzer:
         return self.analysis_results
 
     def generate_analysis_report(self):
-        """Generate comprehensive analysis report"""
+        #Generate comprehensive analysis report
         print("\n📄 GENERATING ANALYSIS REPORT")
         print("-" * 40)
 
@@ -913,7 +910,7 @@ class DataAnalyzer:
 
 
 def main():
-    """Main function to run analysis module"""
+    #Main function to run analysis module
     print("=" * 60)
     print("📊 E-COMMERCE DATA ANALYZER")
     print("=" * 60)
@@ -939,6 +936,6 @@ def main():
 
     print("\n✅ Analysis module ready for integration!")
 
-
 if __name__ == "__main__":
     main()
+
