@@ -1,13 +1,11 @@
-# crawlers/multi_crawler.py - ADD AT THE VERY TOP
 import os
 import sys
 
-# Change to project root directory
 script_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.dirname(script_dir)  # Go up one level to FinalProject
-os.chdir(project_root)  # Change working directory
+project_root = os.path.dirname(script_dir)
+os.chdir(project_root)
 
-print(f"📁 Changed to project root: {project_root}")
+print(f"📁 project root: {project_root}")
 print(f"📁 Data will be saved to: {os.path.join(project_root, 'data')}")
 
 import time
@@ -30,7 +28,7 @@ except ImportError:
 
 
 class MultiWebsiteCrawler:
-    """MAIN CRAWLER MODULE - Handles multiple e-commerce websites"""
+    #Main Crawler Module
 
     SUPPORTED_PLATFORMS = {
         'amazon': {
@@ -42,7 +40,7 @@ class MultiWebsiteCrawler:
         'jd': {
             'name': 'JD.com',
             'class': JDCrawler,
-            'default_proxy': False,  # Changed from True to avoid proxy issues
+            'default_proxy': False,
             'default_captcha': True
         }
     }
@@ -56,7 +54,7 @@ class MultiWebsiteCrawler:
         print("=" * 60)
 
     def configure(self):
-        """Configure the multi-crawler system"""
+        #Configure the multi-crawler system
         print("\n⚙️ CONFIGURATION")
         print("-" * 40)
 
@@ -65,7 +63,7 @@ class MultiWebsiteCrawler:
         if not self.config['keyword']:
             self.config['keyword'] = "laptop"
 
-        # Pages (must be at least 10 per requirements)
+        #Input the number of pages
         while True:
             pages_input = input("Pages per website (10-15): ").strip()
             if pages_input.isdigit() and 10 <= int(pages_input) <= 15:
@@ -73,7 +71,7 @@ class MultiWebsiteCrawler:
                 break
             print("❌ Must be 10-15 pages (project requirement)")
 
-        # Platform selection
+        #Platform selection
         print("\n🌐 SELECT PLATFORMS TO CRAWL:")
         for i, (key, info) in enumerate(self.SUPPORTED_PLATFORMS.items(), 1):
             print(f"  {i}. {info['name']}")
@@ -112,7 +110,7 @@ class MultiWebsiteCrawler:
         return self.config
 
     def create_crawlers(self):
-        """Create crawler instances for selected platforms"""
+        #Create crawler instances for platforms that are selected
         print("\n" + "=" * 60)
         print("🚀 INITIALIZING CRAWLERS")
         print("=" * 60)
@@ -120,12 +118,9 @@ class MultiWebsiteCrawler:
         for platform in self.config['platforms']:
             info = self.SUPPORTED_PLATFORMS[platform]
             crawler_class = info['class']
-
             print(f"\n🔧 Creating {info['name']} crawler...")
-
             use_proxy = self.config.get(f'{platform}_proxy', info['default_proxy'])
             use_captcha = self.config.get(f'{platform}_captcha', info['default_captcha'])
-
             self.crawlers[platform] = crawler_class(
                 use_proxy=use_proxy,
                 use_captcha=use_captcha
@@ -137,30 +132,25 @@ class MultiWebsiteCrawler:
         return self.crawlers
 
     def crawl_all(self):
-        """Execute crawling on all selected platforms"""
+        #Execute crawling on all selected platforms
         print("\n" + "=" * 60)
         print("🌐 STARTING MULTI-PLATFORM CRAWLING")
         print("=" * 60)
-
         total_start = time.time()
         self.results = {}
 
         for i, (platform, crawler) in enumerate(self.crawlers.items(), 1):
             info = self.SUPPORTED_PLATFORMS[platform]
-
             print(f"\n{i}. {info['name'].upper()}")
             print("-" * 40)
-
             platform_start = time.time()
-
-            # Execute the crawl
+            #Execute the crawl
             products = crawler.search_products(
                 keyword=self.config['keyword'],
                 pages=self.config['pages']
             )
 
             platform_time = time.time() - platform_start
-
             self.results[platform] = {
                 'products': products,
                 'count': len(products),
@@ -170,17 +160,16 @@ class MultiWebsiteCrawler:
             print(f"   ⏱️ Time: {platform_time:.1f}s")
             print(f"   📦 Products: {len(products)}")
 
-            # IMPORTANT: Save platform results IMMEDIATELY
+            #Save platform results
             self.save_platform_results(platform, products)
 
         total_time = time.time() - total_start
         print(f"\n✅ ALL CRAWLING COMPLETE")
         print(f"   Total time: {total_time:.1f}s")
-
         return self.results
 
     def save_platform_results(self, platform: str, products: List[Dict]):
-        """Save/append results to platform-specific file"""
+        #Save/append results to platform-specific file
         if not products:
             print(f"   ⚠️ No products found for {platform}")
             return
@@ -188,36 +177,36 @@ class MultiWebsiteCrawler:
         import pandas as pd
         import os
 
-        # Ensure data directory exists
+        #Ensure data directory exists
         os.makedirs('data', exist_ok=True)
 
-        # Create DataFrame
+        #Create DataFrame
         df = pd.DataFrame(products)
 
-        # Add metadata
+        #Add metadata
         if 'platform' not in df.columns:
             df['platform'] = platform
         df['crawl_timestamp'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         df['search_keyword'] = self.config['keyword']
 
-        # Platform-specific file
+        #Platform-specific file
         platform_file = f"data/{platform}_products.csv"
 
         print(f"   💾 Processing {platform_file}...")
         print(f"   New products: {len(df)}")
 
-        # ✅ APPEND to platform file
+        #Append to platform file
         if os.path.exists(platform_file):
             try:
-                # Read existing data
+                #Read existing data
                 existing_df = pd.read_csv(platform_file)
                 print(f"   Existing products: {len(existing_df)}")
 
-                # Combine old and new data
+                #Combine old and new data
                 combined_df = pd.concat([existing_df, df], ignore_index=True)
                 print(f"   After combining: {len(combined_df)} products")
 
-                # Remove duplicates
+                #Remove duplicates
                 if 'product_id' in combined_df.columns:
                     before = len(combined_df)
                     combined_df = combined_df.drop_duplicates(subset=['product_id'], keep='last')
@@ -239,17 +228,16 @@ class MultiWebsiteCrawler:
             print(f"   ✅ Created new file with {len(df)} products")
 
     def save_combined_results(self):
-        """Save/append combined results to all_products.csv"""
+        #Save/append combined results to all_products.csv
         print("\n" + "=" * 60)
         print("💾 SAVING COMBINED RESULTS")
         print("=" * 60)
-
         all_new_products = []
         current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
         for platform, data in self.results.items():
             for product in data['products']:
-                # Ensure platform is included
+                #Ensure platform is included
                 product['platform'] = platform
                 product['crawl_timestamp'] = current_time
                 product['search_keyword'] = self.config['keyword']
@@ -262,7 +250,6 @@ class MultiWebsiteCrawler:
 
         df = pd.DataFrame(all_new_products)
         all_file = 'data/all_products.csv'
-
         print(f"\n📊 Total new products from this crawl: {len(df)}")
 
         try:
@@ -320,7 +307,7 @@ class MultiWebsiteCrawler:
         return df
 
     def show_sample_data(self):
-        """Display sample of collected data"""
+        #Display sample of collected data
         if not self.results:
             print("❌ No data to display")
             return
@@ -343,7 +330,7 @@ class MultiWebsiteCrawler:
                     print(df_sample[available_cols].to_string(index=False))
 
     def run(self):
-        """Main method to run the entire multi-crawler system"""
+        #Main method to run the entire multi-crawler system
         print("\n" + "=" * 60)
         print("🎯 MULTI-WEBSITE CRAWLER SYSTEM")
         print("=" * 60)
@@ -371,7 +358,7 @@ class MultiWebsiteCrawler:
 
 
 def main():
-    """Entry point for the Multi-website Crawler Module"""
+    #Entry point for the Multi-website Crawler Module
     print("=" * 60)
     print("🛒 MULTI-WEBSITE CRAWLER MODULE")
     print("=" * 60)
@@ -401,7 +388,6 @@ def main():
                 print(f"   {file}: ❌ NOT CREATED - Check crawler output above")
     else:
         print("\n❌ No data collected.")
-
 
 if __name__ == "__main__":
     main()

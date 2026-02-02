@@ -96,6 +96,16 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="/monitoring">
+                            <i class="fas fa-bell"></i> Price Monitoring
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recommendations">
+                            <i class="fas fa-robot"></i> Recommendations
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/analysis">
                             <i class="fas fa-chart-bar"></i> Analysis
                         </a>
@@ -192,15 +202,15 @@
                     <div class="list-group">
                         <div class="list-group-item">
                             <strong>Minimum Price:</strong> 
-                            <span class="float-end">${{ "%.2f"|format(stats.min_price) }}</span>
+                            <span class="float-end">${{ "%.2f"|format(stats.get('min_price', 0)) }}</span>
                         </div>
                         <div class="list-group-item">
-                            <strong>Maximum Price:</strong> 
-                            <span class="float-end">${{ "%.2f"|format(stats.max_price) }}</span>
+                            <strong>Maximum Price:</strong>
+                            <span class="float-end">${{ "%.2f"|format(stats.get('max_price', 0)) }}</span>
                         </div>
                         <div class="list-group-item">
-                            <strong>Price Range:</strong> 
-                            <span class="float-end">${{ "%.2f"|format(stats.max_price - stats.min_price) }}</span>
+                            <strong>Price Range:</strong>
+                            <span class="float-end">${{ "%.2f"|format(stats.get('max_price', 0) - stats.get('min_price', 0)) }}</span>
                         </div>
                         <div class="list-group-item">
                             <strong>Platforms:</strong> 

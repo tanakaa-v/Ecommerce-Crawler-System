@@ -1,31 +1,27 @@
-# crawlers/amazon_crawler.py
 import re
 import time
 import random
 from typing import List, Dict
 from base_crawler import BaseCrawler
 
-
 class AmazonCrawler(BaseCrawler):
-    """Amazon crawler - inherits from BaseCrawler"""
+    #Amazon crawler - inherits from BaseCrawler
 
     def __init__(self, use_proxy: bool = False, use_captcha: bool = False):
         super().__init__('Amazon', use_proxy, use_captcha)
         self.base_url = "https://www.amazon.com"
 
     def search_products(self, keyword: str, pages: int = 10) -> List[Dict]:
-        """Search products on Amazon"""
+        #Search products on Amazon
         print(f"\n🛒 Amazon: Searching for '{keyword}' ({pages} pages)")
 
         self.products = []  # Reset products
 
         for page in range(1, pages + 1):
             print(f"\n📖 Page {page}/{pages}...")
-
             # Amazon search URL
             url = f"{self.base_url}/s"
             params = {'k': keyword, 'page': page}
-
             response = self.make_request(url, params=params)
 
             if not response:
@@ -37,22 +33,21 @@ class AmazonCrawler(BaseCrawler):
             # Parse products from this page
             page_products = self.parse_listing_page(response.text, page)
 
-            # Get details for first product (optional, for demonstration)
-            if page_products and page <= 2:  # Only first 2 pages for speed
+            # Get details for first product
+            if page_products and page <= 2:
                 product = page_products[0]
                 detail_info = self.parse_detail_page(product.get('detail_url', ''))
                 if detail_info:
                     product.update(detail_info)
 
             self.products.extend(page_products)
-
             print(f"✅ Found {len(page_products)} products")
 
         print(f"\n🎯 Amazon complete: {len(self.products)} total products")
         return self.products
 
     def parse_listing_page(self, html: str, page_num: int) -> List[Dict]:
-        """Parse Amazon search results"""
+        #Parse Amazon search results
         try:
             from bs4 import BeautifulSoup
             soup = BeautifulSoup(html, 'html.parser')
@@ -83,7 +78,7 @@ class AmazonCrawler(BaseCrawler):
             return self._create_sample_products('Amazon', page_num, 8)
 
     def _extract_product_info(self, item) -> Dict:
-        """Extract product info from HTML element"""
+        #Extract product info from HTML element
         from bs4 import BeautifulSoup
 
         # Product ID
@@ -133,7 +128,7 @@ class AmazonCrawler(BaseCrawler):
         }
 
     def parse_detail_page(self, detail_url: str) -> Dict:
-        """Get additional details from product page"""
+        #Get additional details from product page
         if not detail_url:
             return {}
 
@@ -144,7 +139,6 @@ class AmazonCrawler(BaseCrawler):
         try:
             from bs4 import BeautifulSoup
             soup = BeautifulSoup(response.text, 'html.parser')
-
             details = {}
 
             # Category
@@ -160,9 +154,8 @@ class AmazonCrawler(BaseCrawler):
             return {}
 
     def _create_sample_products(self, keyword: str, page_num: int, count: int) -> List[Dict]:
-        """Create sample products when parsing fails"""
+        #Create sample products when parsing fails
         products = []
-
         brands = ['Apple', 'Samsung', 'Dell', 'HP', 'Lenovo']
 
         for i in range(count):

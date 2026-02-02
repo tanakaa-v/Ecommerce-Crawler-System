@@ -1,12 +1,11 @@
-# crawlers/base_crawler.py - COMPLETE FIXED VERSION
 from abc import ABC, abstractmethod
 from typing import List, Dict, Optional
 import time
-from anti_bot import AntiBotManager  # ADD THIS IMPORT
+from anti_bot import AntiBotManager
 
 
 class BaseCrawler(ABC):
-    """Base class for all e-commerce crawlers - FASTER VERSION"""
+    #Base class for all e-commerce crawlers
 
     def __init__(self, platform_name: str, use_proxy: bool = False, use_captcha: bool = False):
         self.platform = platform_name
@@ -15,25 +14,25 @@ class BaseCrawler(ABC):
 
     @abstractmethod
     def search_products(self, keyword: str, pages: int = 10) -> List[Dict]:
-        """Search products - must be implemented by child classes"""
+        #Search products
         pass
 
     @abstractmethod
     def parse_listing_page(self, html: str, page_num: int) -> List[Dict]:
-        """Parse listing page - must be implemented by child classes"""
+        #Parse listing page
         pass
 
     @abstractmethod
     def parse_detail_page(self, product_url: str) -> Dict:
-        """Parse detail page - must be implemented by child classes"""
+        #Parse detail page
         pass
 
     def make_request(self, url: str, **kwargs):
-        """Make HTTP request using anti-bot system"""
+        #Make HTTP request using anti-bot system
         return self.anti_bot.make_request(url, **kwargs)
 
     def quick_request(self, url: str, max_attempts: int = 3):
-        """QUICK request - MAX 3 attempts, faster failure"""
+        #Quick request, MAX 3 attempts
         for attempt in range(max_attempts):
             try:
                 print(f"🚀 [{self.platform}] Quick attempt {attempt + 1}/{max_attempts}")
@@ -41,14 +40,14 @@ class BaseCrawler(ABC):
                 if response and response.status_code == 200:
                     return response
                 elif attempt < max_attempts - 1:
-                    time.sleep(0.5)  # Very short wait
+                    time.sleep(0.5)
             except:
                 if attempt < max_attempts - 1:
                     time.sleep(0.5)
         return None
 
     def fast_search_page(self, keyword: str, page: int, max_time: int = 20):
-        """Fast page search with timeout"""
+        #Fast page search with timeout
         import threading
 
         result = []
@@ -86,11 +85,11 @@ class BaseCrawler(ABC):
         return None
 
     def _build_search_url(self, keyword: str, page: int) -> str:
-        """Build search URL - override in child classes if needed"""
+        #Build search URL
         raise NotImplementedError("Child classes must implement _build_search_url")
 
     def save_to_csv(self, filename: str):
-        """Save products to CSV"""
+        #Save products to CSV
         import pandas as pd
         import os
 
@@ -99,7 +98,6 @@ class BaseCrawler(ABC):
             return None
 
         os.makedirs(os.path.dirname(filename), exist_ok=True)
-
         df = pd.DataFrame(self.products)
         df.to_csv(filename, index=False, encoding='utf-8')
 
@@ -107,7 +105,7 @@ class BaseCrawler(ABC):
         return df
 
     def show_sample(self, count: int = 3):
-        """Show sample of collected products"""
+        #Show sample of collected products
         if not self.products:
             print(f"⚠️ No products to show for {self.platform}")
             return
@@ -130,7 +128,7 @@ class BaseCrawler(ABC):
         print("-" * 60)
 
     def get_stats(self) -> Dict:
-        """Get crawling statistics"""
+        #Get crawling statistics
         return {
             'platform': self.platform,
             'product_count': len(self.products),

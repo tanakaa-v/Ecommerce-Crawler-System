@@ -1,4 +1,3 @@
-# ml/product_similarity.py
 import numpy as np
 from typing import List, Dict
 from sklearn.preprocessing import StandardScaler

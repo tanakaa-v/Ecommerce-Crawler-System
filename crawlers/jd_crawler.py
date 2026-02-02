@@ -1,4 +1,3 @@
-# crawlers/jd_crawler.py
 import re
 import json
 import time
@@ -6,16 +5,15 @@ import random
 from typing import List, Dict
 from base_crawler import BaseCrawler
 
-
 class JDCrawler(BaseCrawler):
-    """JD.com crawler - inherits from BaseCrawler"""
+    #JD.com crawler - inherits from BaseCrawler
 
     def __init__(self, use_proxy: bool = True, use_captcha: bool = True):
         super().__init__('JD.com', use_proxy, use_captcha)
         self.base_url = "https://search.jd.com"
 
     def search_products(self, keyword: str, pages: int = 10) -> List[Dict]:
-        """Search products on JD.com - MAX 3 ATTEMPTS PER PAGE"""
+        #Search products on JD.com
         print(f"\n🛒 JD.com: Searching for '{keyword}' ({pages} pages)")
         print("⚠️ Note: JD.com has strong anti-bot protection")
 
@@ -25,7 +23,7 @@ class JDCrawler(BaseCrawler):
         for page in range(1, pages + 1):
             print(f"\n📖 Page {page}/{pages}...")
 
-            # Try URLs one at a time, MAX 3 TOTAL ATTEMPTS PER PAGE
+            # Try URLs one at a time
             url_formats = [
                 f"https://search.jd.com/Search?keyword={keyword}&page={page}",
                 f"https://so.m.jd.com/ware/search.action?keyword={keyword}&page={page}",
@@ -35,7 +33,6 @@ class JDCrawler(BaseCrawler):
             url_success = False
 
             for url in url_formats:
-                # This makes_request already has max 3 attempts built in
                 response = self.make_request(url)
 
                 if response and response.status_code == 200:
@@ -60,8 +57,7 @@ class JDCrawler(BaseCrawler):
                 print(f"✅ Found {len(page_products)} products")
             else:
                 print("❌ All URL formats failed, adding MINIMAL sample data")
-                # REDUCE from 5 to 2-3 samples
-                samples = self._create_sample_products(keyword, page, 3)  # Changed from 5 to 3
+                samples = self._create_sample_products(keyword, page, 3)
                 self.products.extend(samples)
 
         print(f"\n📊 JD.com Results: {successful_pages}/{pages} successful pages")
@@ -70,7 +66,7 @@ class JDCrawler(BaseCrawler):
         return self.products
 
     def parse_listing_page(self, html: str, page_num: int) -> List[Dict]:
-        """Parse JD.com search results"""
+        #Parse JD.com search results
         products = []
 
         # Try JSON extraction first
@@ -100,7 +96,7 @@ class JDCrawler(BaseCrawler):
         return products or self._create_sample_products('JD', page_num, 8)
 
     def _try_json_extraction(self, html: str, page_num: int) -> List[Dict]:
-        """Try to extract JSON data from script tags"""
+        #Try to extract JSON data from script tags
         try:
             pattern = r'window\.pageConfig\s*=\s*({.*?});'
             matches = re.findall(pattern, html, re.DOTALL)
@@ -139,7 +135,8 @@ class JDCrawler(BaseCrawler):
         return []
 
     def _extract_from_html(self, item, page_num: int) -> Dict:
-        """Extract product from HTML element"""
+       #Extract product from HTML element
+
         from bs4 import BeautifulSoup
 
         # Product ID
@@ -165,11 +162,11 @@ class JDCrawler(BaseCrawler):
         }
 
     def parse_detail_page(self, product_url: str) -> Dict:
-        """Parse detail page (simplified for JD.com)"""
+        #Parse detail page
         return {'details': 'JD.com product details'}
 
     def _create_sample_products(self, keyword: str, page_num: int, count: int) -> List[Dict]:
-        """Create Chinese sample products"""
+        #Create sample products
         products = []
 
         chinese_brands = ['华为', '小米', '苹果', '联想', '戴尔', '三星']

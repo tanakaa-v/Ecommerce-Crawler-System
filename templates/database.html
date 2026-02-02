@@ -10,6 +10,7 @@
         body { background-color: #f8f9fa; }
         .card { border-radius: 10px; margin-bottom: 20px; }
         pre { background: #f8f9fa; padding: 15px; border-radius: 5px; }
+        .schema-badge { font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -19,6 +20,8 @@
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="/">Dashboard</a>
                 <a class="nav-link" href="/products">Products</a>
+                <a class="nav-link" href="/monitoring">Monitoring</a>
+                <a class="nav-link" href="/recommendations">Recommendations</a>
                 <a class="nav-link" href="/analysis">Analysis</a>
                 <a class="nav-link active" href="/database">Database</a>
             </div>
@@ -87,14 +90,18 @@
                             {% for column in summary.columns %}
                             <tr>
                                 <td><code>{{ column }}</code></td>
-                                <td><span class="badge bg-secondary">{{ summary.data_types.get(column, 'text') }}</span></td>
+                                <td><span class="badge bg-secondary schema-badge">{{ summary.data_types.get(column, 'text') }}</span></td>
                                 <td>
                                     {% if column == 'product_id' %}Unique product ID
                                     {% elif column == 'name' %}Product name
                                     {% elif column == 'current_price' %}Current price
-                                    {% elif column == 'rating' %}Customer rating
+                                    {% elif column == 'rating' %}Customer rating (1-5)
                                     {% elif column == 'platform' %}E-commerce platform
                                     {% elif column == 'category' %}Product category
+                                    {% elif column == 'review_count' %}Number of reviews
+                                    {% elif column == 'store_name' %}Seller/store name
+                                    {% elif column == 'original_price' %}Original price
+                                    {% elif column == 'crawled_at' %}Data collection timestamp
                                     {% else %}Additional information{% endif %}
                                 </td>
                             </tr>
@@ -114,6 +121,7 @@
                                 <th>Name</th>
                                 <th>Price</th>
                                 <th>Rating</th>
+                                <th>Category</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -139,9 +147,25 @@
                                 </td>
                                 <td>
                                     {% if row.rating %}
-                                        {{ row.rating }} ★
+                                        <span class="text-warning">
+                                            {% for i in range(5) %}
+                                                {% if i < row.rating|int %}
+                                                    ★
+                                                {% else %}
+                                                    ☆
+                                                {% endif %}
+                                            {% endfor %}
+                                        </span>
+                                        ({{ row.rating }})
                                     {% else %}
                                         N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if row.category %}
+                                        <span class="badge bg-info">{{ row.category }}</span>
+                                    {% else %}
+                                        <span class="text-muted">Uncategorized</span>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -150,41 +174,85 @@
                     </table>
                 </div>
 
-                <!-- SQL Schema -->
-                <h3><i class="fas fa-code me-2"></i>SQL Schema</h3>
-                <pre>
-CREATE TABLE products (
-    platform VARCHAR(50),
-    product_id VARCHAR(100),
-    name TEXT,
-    current_price DECIMAL(10,2),
-    original_price DECIMAL(10,2),
-    rating DECIMAL(3,2),
-    review_count INT,
-    store_name VARCHAR(200),
-    category VARCHAR(100),
-    details TEXT,
-    image_url VARCHAR(500),
-    crawled_at TIMESTAMP,
-    crawl_timestamp VARCHAR(50),
-    search_keyword VARCHAR(100),
-    pages_crawled INT,
-    UNIQUE(platform, product_id)
-);
+                <!-- Platform Distribution -->
+                {% if summary.platform_distribution %}
+                <h3><i class="fas fa-chart-pie me-2"></i>Platform Distribution</h3>
+                <div class="row mb-4">
+                    {% for platform, count in summary.platform_distribution.items() %}
+                    <div class="col-md-3 mb-2">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">
+                                    {% if platform|lower == 'amazon' %}
+                                        <span class="badge bg-warning">Amazon</span>
+                                    {% elif platform|lower == 'jd' or platform|lower == 'jd.com' %}
+                                        <span class="badge bg-danger">JD.com</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ platform }}</span>
+                                    {% endif %}
+                                </h5>
+                                <h2 class="text-primary">{{ count }}</h2>
+                                <p class="text-muted">Products</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
 
--- Indexes for better performance
-CREATE INDEX idx_platform ON products(platform);
-CREATE INDEX idx_price ON products(current_price);
-CREATE INDEX idx_category ON products(category);
-                </pre>
+                <!-- Storage Information -->
+                <h3><i class="fas fa-info-circle me-2"></i>Storage Information</h3>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>File Details</h5>
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <strong>Format:</strong> CSV (Comma-Separated Values)
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Primary File:</strong> <code>data/all_products.csv</code>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Encoding:</strong> UTF-8
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Size:</strong> {{ summary.total_rows }} records
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Data Quality</h5>
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <strong>Unique Products:</strong> {{ summary.total_rows }}
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Platforms:</strong> {{ summary.platform_distribution|length if summary.platform_distribution else 0 }}
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Data Freshness:</strong> Real-time collection
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Update Frequency:</strong> Continuous monitoring
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Actions -->
                 <div class="text-center mt-4">
                     <a href="/analysis" class="btn btn-primary me-2">
                         <i class="fas fa-chart-bar me-1"></i> Go to Analysis
                     </a>
-                    <button class="btn btn-success" onclick="alert('Data exported to CSV: data/all_products.csv')">
-                        <i class="fas fa-download me-1"></i> Export CSV
+                    <a href="/products" class="btn btn-success me-2">
+                        <i class="fas fa-search me-1"></i> Browse Products
+                    </a>
+                    <button class="btn btn-outline-primary" onclick="alert('Data can be exported from the Products page')">
+                        <i class="fas fa-download me-1"></i> Export Options
                     </button>
                 </div>
             </div>

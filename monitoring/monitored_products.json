@@ -1,0 +1,11 @@
+[
+  {
+    "product_id": "guitar",
+    "platform": "Amazon",
+    "name": "Product guitar",
+    "current_price": 100.0,
+    "target_price": 500.0,
+    "added_at": "2026-02-02 19:52:39",
+    "last_checked": "2026-02-02 19:52:39"
+  }
+]

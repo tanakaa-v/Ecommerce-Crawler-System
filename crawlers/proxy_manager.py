@@ -1,7 +1,5 @@
-# crawlers/proxy_manager.py
 import requests
 import time
-
 
 class ProxyManager:
     def __init__(self):
@@ -9,7 +7,7 @@ class ProxyManager:
         self.last_fetch = 0
 
     def fetch_free_proxies(self):
-        """Fetch free proxies from public APIs"""
+        #Fetch free proxies from public APIs
         sources = [
             'https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all',
             'https://www.proxy-list.download/api/v1/get?type=http',

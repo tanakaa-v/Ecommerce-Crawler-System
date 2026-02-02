@@ -1,4 +1,3 @@
-# crawlers/anti_bot.py - FIXED with 3 retries max
 import requests
 import time
 import random
@@ -8,9 +7,8 @@ from typing import Optional, Dict, List
 from fake_useragent import UserAgent
 import re
 
-
 class AntiBotManager:
-    """Fixed anti-bot system - MAX 3 RETRIES PER REQUEST"""
+    #Anti-bot system - Max 3 retries per request
 
     def __init__(self, platform_name: str, use_proxy: bool = False, use_captcha: bool = False):
         self.platform = platform_name
@@ -24,7 +22,7 @@ class AntiBotManager:
         self._setup_platform_specifics()
 
     def _setup_platform_specifics(self):
-        """Platform-specific settings - FASTER with 3 retries"""
+        #Platform-specific settings
         self.platform_config = {
             'Amazon': {
                 'delay_range': (0.5, 1.5),  # FASTER: was (1.0, 3.0)
@@ -46,11 +44,11 @@ class AntiBotManager:
             }
         }
 
-        # Get config for this platform
+        #Get config for this platform
         self.config = self.platform_config.get(self.platform, self.platform_config['default'])
 
     def _load_proxies(self) -> List[str]:
-        """Load proxies - simplified"""
+        #Load proxies
         proxies = []
 
         # Local proxy file
@@ -58,7 +56,7 @@ class AntiBotManager:
             with open('proxies.txt', 'r') as f:
                 proxies = [line.strip() for line in f if line.strip()]
 
-        # Hardcoded fallback (minimal)
+        #Hardcoded fallback
         if not proxies:
             proxies = [
                 'http://103.156.140.170:8080',
@@ -69,7 +67,7 @@ class AntiBotManager:
         return proxies
 
     def get_random_headers(self) -> Dict[str, str]:
-        """Generate random headers"""
+        #Generate random headers
         base_headers = {
             'User-Agent': self.ua.random,
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -79,7 +77,7 @@ class AntiBotManager:
             'Upgrade-Insecure-Requests': '1',
         }
 
-        # Platform-specific headers
+        #Platform-specific headers
         if self.platform == 'JD.com':
             base_headers.update({
                 'Accept-Language': 'zh-CN,zh;q=0.9',
@@ -93,7 +91,7 @@ class AntiBotManager:
         return base_headers
 
     def get_random_proxy(self) -> Optional[Dict[str, str]]:
-        """Get random proxy from pool"""
+        #Get random proxy from pool
         if not self.proxies or not self.use_proxy:
             return None
 
@@ -101,14 +99,14 @@ class AntiBotManager:
         return {'http': proxy, 'https': proxy}
 
     def calculate_delay(self):
-        """Smart delay - FASTER"""
+        #Smart delay
         self.request_count += 1
         elapsed = time.time() - self.start_time
 
-        # Platform-specific delays (reduced)
+        #Platform-specific delays
         min_delay, max_delay = self.config['delay_range']
 
-        # FASTER: Simpler delay calculation
+        #Delay calculator
         if elapsed > 60 and self.request_count / elapsed > self.config['max_requests_per_min'] / 60:
             delay = max_delay * 2
             print(f"⏳ [{self.platform}] Rate limit approaching, sleeping {delay:.1f}s")
@@ -119,7 +117,7 @@ class AntiBotManager:
         return delay
 
     def detect_captcha(self, html: str) -> bool:
-        """Detect CAPTCHA in response"""
+        #Detect CAPTCHA in response
         if not self.use_captcha:
             return False
 
@@ -134,33 +132,27 @@ class AntiBotManager:
         return False
 
     def handle_captcha(self):
-        """Handle CAPTCHA - FASTER"""
+        #Handle CAPTCHA
         print(f"🔄 [{self.platform}] Handling CAPTCHA...")
-        # FASTER: Shorter wait
         time.sleep(random.uniform(3, 6))
         print(f"✅ [{self.platform}] CAPTCHA handled")
         return True
 
     def make_request(self, url: str, method: str = 'GET', **kwargs) -> Optional[requests.Response]:
-        """Make HTTP request - MAX 3 ATTEMPTS TOTAL"""
-        # Prepare request
+        #Make HTTP request
+        #Prepare request
         headers = kwargs.pop('headers', self.get_random_headers())
         proxies = self.get_random_proxy()
+        max_retries = self.config['retry_attempts']
 
-        # MAX 3 ATTEMPTS TOTAL (1 initial + 2 retries)
-        max_retries = self.config['retry_attempts']  # Should be 2 for 3 total attempts
-
-        for attempt in range(max_retries + 1):  # +1 for initial attempt
+        for attempt in range(max_retries + 1):  #+1 for initial attempt
             try:
-                # Apply delay (except on first attempt if we just started)
+                #Apply delay (except on first attempt if we just started)
                 if attempt > 0 or self.request_count > 0:
                     self.calculate_delay()
 
                 print(f"🌐 [{self.platform}] Attempt {attempt + 1}/{max_retries + 1}: {url[:50]}...")
-
-                # SHORTER timeout
-                timeout = 10 if attempt == 0 else 5  # First try 10s, retries 5s
-
+                timeout = 10 if attempt == 0 else 5  #First try 10s, retries 5s
                 response = self.session.request(
                     method=method,
                     url=url,
@@ -170,7 +162,7 @@ class AntiBotManager:
                     **kwargs
                 )
 
-                # Check for CAPTCHA
+                #Check for CAPTCHA
                 if self.detect_captcha(response.text):
                     if self.handle_captcha():
                         # After CAPTCHA, use same proxy but count as attempt
@@ -181,18 +173,17 @@ class AntiBotManager:
                     print(f"✅ [{self.platform}] Success")
                     return response
 
-                elif response.status_code in [403, 429, 503]:  # Blocked
+                elif response.status_code in [403, 429, 503]:  #Blocked
                     print(f"🚫 [{self.platform}] Blocked! Status {response.status_code}")
 
                     if attempt < max_retries:  # Still have retries
                         print(f"🔄 [{self.platform}] Switching proxy and retrying...")
                         proxies = self.get_random_proxy()  # New proxy
-                        # SHORTER wait between retries
                         time.sleep(random.uniform(2, 4))
                         continue
 
                 else:
-                    # Other HTTP errors - don't retry most
+                    # Other HTTP error - don't retry most
                     print(f"⚠️ [{self.platform}] HTTP {response.status_code}")
                     if response.status_code >= 500:  # Server errors might work on retry
                         if attempt < max_retries:
@@ -203,7 +194,7 @@ class AntiBotManager:
             except requests.exceptions.Timeout:
                 print(f"⏰ [{self.platform}] Timeout")
                 if attempt < max_retries:
-                    time.sleep(1)  # Short wait
+                    time.sleep(1)
                     continue
 
             except requests.exceptions.ConnectionError:
@@ -227,7 +218,7 @@ class AntiBotManager:
             except Exception as e:
                 print(f"❌ [{self.platform}] Error: {str(e)[:80]}")
                 if attempt < max_retries:
-                    wait_time = min(attempt + 1, 3)  # Max 3 seconds
+                    wait_time = min(attempt + 1, 3)  #Max 3 seconds
                     time.sleep(wait_time)
                     continue
 
@@ -235,11 +226,10 @@ class AntiBotManager:
         return None
 
     def save_debug_info(self, response, filename_prefix):
-        """Save debug info - optional"""
+        #Save debug info
         if response:
             debug_dir = 'debug_logs'
             os.makedirs(debug_dir, exist_ok=True)
-
             timestamp = time.strftime('%Y%m%d_%H%M%S')
             filename = f"{debug_dir}/{filename_prefix}_{timestamp}.html"
 
@@ -248,6 +238,5 @@ class AntiBotManager:
                 f.write(f"Status: {response.status_code}\n")
                 f.write(f"Platform: {self.platform}\n")
                 f.write("\n" + "=" * 50 + "\n")
-                f.write(response.text[:2000])  # Smaller file
-
+                f.write(response.text[:2000])
             print(f"📄 [{self.platform}] Debug saved: {filename}")
