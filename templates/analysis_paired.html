@@ -1,0 +1,354 @@
+{% extends "base.html" %}
+
+{% block title %}Data Analysis - E-commerce Analytics{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chart-container {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .chart-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .chart-image {
+        width: 100%;
+        height: 250px;
+        object-fit: contain;
+        cursor: pointer;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        padding: 10px;
+        background: white;
+        transition: all 0.3s ease;
+    }
+
+    .chart-image:hover {
+        border-color: #007bff;
+        transform: scale(1.02);
+    }
+
+    .btn-regenerate {
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .chart-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    .chart-section {
+        margin-bottom: 10px;
+    }
+
+    .chart-section h6 {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1><i class="fas fa-chart-bar"></i> Data Analysis</h1>
+        <p class="lead">Interactive charts and analysis</p>
+    </div>
+    <button class="btn btn-primary" onclick="regenerateAllCharts()" id="regenerateAllBtn">
+        <i class="fas fa-sync"></i> Regenerate All Charts
+    </button>
+</div>
+
+<!-- Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h3>{{ total_products }}</h3>
+                <p class="text-muted mb-0">Total Products</p>
+            </div>
+        </div>
+    </div>
+<div class="col-md-3">
+<div class="card">
+<div class="card-body text-center">
+<h3>${{ "%.2f"|format(stats.price.mean) }}</h3>
+    <p class="text-muted mb-0">Avg Price</p>
+</div>
+</div>
+</div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h3>{{ "%.2f"|format(stats.rating.mean) }}</h3>
+                <p class="text-muted mb-0">Avg Rating</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h3>{{ stats.rating.count_above_4 }}</h3>
+                <p class="text-muted mb-0">> 4 Stars</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart Grid -->
+<div class="row">
+    {% set chart_types = [
+    ('trend', 'Trend Analysis', 'fas fa-chart-line'),
+    ('price', 'Price Analysis', 'fas fa-dollar-sign'),
+    ('rating', 'Rating Analysis', 'fas fa-star'),
+    ('category', 'Category Analysis', 'fas fa-tags'),
+    ('platform', 'Platform Analysis', 'fas fa-globe'),
+    ('sentiment', 'Sentiment Analysis', 'fas fa-smile')
+    ] %}
+
+    {% for chart_type, title, icon in chart_types %}
+    <div class="col-md-4 mb-4">
+        <div class="chart-container">
+            <div class="chart-title">
+                <i class="{{ icon }} me-2"></i> {{ title }}
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="chart-section">
+                        <h6>Before</h6>
+                        {% if chart_pairs[chart_type] and chart_pairs[chart_type][0] %}
+                        <img src="/static/charts/{{ chart_pairs[chart_type][0] }}"
+                             class="chart-image"
+                             alt="{{ title }} - Before"
+                             onclick="openChartModal(this.src)"
+                             title="Click to enlarge">
+                        {% else %}
+                        <div class="alert alert-warning p-2 text-center">
+                            <small>No chart available</small>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="chart-section">
+                        <h6>After</h6>
+                        {% if chart_pairs[chart_type] and chart_pairs[chart_type][1] %}
+                        <img src="/static/charts/{{ chart_pairs[chart_type][1] }}"
+                             class="chart-image"
+                             alt="{{ title }} - After"
+                             onclick="openChartModal(this.src)"
+                             title="Click to enlarge">
+                        {% else %}
+                        <div class="alert alert-warning p-2 text-center">
+                            <small>No chart available</small>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-outline-primary btn-regenerate"
+                    onclick="generateChart('{{ chart_type }}')"
+                    id="btn-{{ chart_type }}">
+                <i class="fas fa-redo me-2"></i> Regenerate {{ title }}
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Chart Modal -->
+<div class="modal fade" id="chartModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chart Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="Chart" class="img-fluid rounded">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="loadingToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Generating Charts</strong>
+            <small>Just now</small>
+        </div>
+        <div class="toast-body">
+            <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+            Please wait while charts are being generated...
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Modal for chart viewing
+let chartModal = null;
+
+document.addEventListener('DOMContentLoaded', function () {
+    chartModal = new bootstrap.Modal(document.getElementById('chartModal'));
+});
+
+function openChartModal(src) {
+    document.getElementById('modalImage').src = src;
+    chartModal.show();
+}
+
+// Generate specific chart
+async function generateChart(chartType) {
+const btn = document.getElementById(`btn-${chartType}`);
+    const originalHTML = btn.innerHTML;
+
+    // Show loading state
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating...';
+    btn.disabled = true;
+
+    try {
+        // Generate the main chart
+        const response = await fetch(`/api/generate_chart/${chartType}`, {
+            method: 'POST'
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Show success message
+            showToast('success', `${chartType.charAt(0).toUpperCase() + chartType.slice(1)} chart generated!`);
+
+            // Generate the pair
+            setTimeout(async () => {
+                try {
+                    const pairResponse = await fetch(`/api/generate_pair/${chartType}`, {
+                        method: 'POST'
+                    });
+
+                    const pairResult = await pairResponse.json();
+
+                    if (pairResult.success) {
+                        showToast('success', 'Chart pair created!');
+
+                        // Reload page after short delay
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        showToast('error', 'Error creating chart pair');
+                        btn.innerHTML = originalHTML;
+                        btn.disabled = false;
+                    }
+                } catch (error) {
+                    showToast('error', 'Network error');
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+                }
+            }, 500);
+
+        } else {
+            showToast('error', result.message || 'Failed to generate chart');
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }
+    } catch (error) {
+        showToast('error', 'Network error: ' + error.message);
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+    }
+}
+
+// Regenerate all charts
+async function regenerateAllCharts() {
+    if (!confirm('This will regenerate ALL charts. This may take a moment. Continue?')) {
+        return;
+    }
+
+    const btn = document.getElementById('regenerateAllBtn');
+    const originalHTML = btn.innerHTML;
+
+    // Show loading state
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating all charts...';
+    btn.disabled = true;
+
+    // Show loading toast
+    const loadingToast = new bootstrap.Toast(document.getElementById('loadingToast'));
+    loadingToast.show();
+
+    try {
+        const response = await fetch('/generate_all_charts');
+        const result = await response.json();
+
+        loadingToast.hide();
+
+        if (result.success) {
+            showToast('success', `Successfully generated ${result.charts.length} charts!`);
+
+            // Reload page after short delay
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showToast('error', result.message || 'Failed to generate charts');
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }
+    } catch (error) {
+        loadingToast.hide();
+        showToast('error', 'Network error: ' + error.message);
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+    }
+}
+
+// Toast notification helper
+function showToast(type, message) {
+    const toastContainer = document.createElement('div');
+    toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+    toastContainer.style.zIndex = '11';
+
+    const toastId = 'toast-' + Date.now();
+    const toastHTML = `
+            <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-${type === 'success' ? 'success' : 'danger'} text-white">
+                    <strong class="me-auto">${type === 'success' ? 'Success' : 'Error'}</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        `;
+
+    toastContainer.innerHTML = toastHTML;
+    document.body.appendChild(toastContainer);
+
+    const toast = new bootstrap.Toast(document.getElementById(toastId));
+    toast.show();
+
+    // Remove toast after it hides
+    toast._element.addEventListener('hidden.bs.toast', function () {
+        toastContainer.remove();
+    });
+}
+</script>
+{% endblock %}

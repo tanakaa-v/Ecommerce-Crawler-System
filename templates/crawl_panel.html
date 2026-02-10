@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Crawler Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .crawl-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .crawl-header {
+            background: linear-gradient(135deg, #4A00E0 0%, #8E2DE2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .crawl-body {
+            padding: 25px;
+        }
+
+        .platform-card {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .platform-card:hover {
+            border-color: #4A00E0;
+            box-shadow: 0 5px 15px rgba(74, 0, 224, 0.1);
+        }
+
+        .platform-card.active {
+            border-color: #4A00E0;
+            background-color: rgba(74, 0, 224, 0.05);
+        }
+
+        .setting-group {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .btn-crawl {
+            background: linear-gradient(135deg, #4A00E0 0%, #8E2DE2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-crawl:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(74, 0, 224, 0.3);
+        }
+
+        .btn-crawl:disabled {
+            background: #6c757d;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .result-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-ready {
+            background-color: #28a745;
+        }
+
+        .status-crawling {
+            background-color: #ffc107;
+        }
+
+        .status-error {
+            background-color: #dc3545;
+        }
+
+        .status-complete {
+            background-color: #17a2b8;
+        }
+
+        .nav-back {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .nav-back:hover {
+            color: #ddd;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Navigation -->
+    <a href="/" class="nav-back">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+
+    <!-- Main Card -->
+    <div class="crawl-card">
+        <div class="crawl-header">
+            <h1><i class="fas fa-spider"></i> Web Crawler Control Panel</h1>
+            <p class="mb-0">Crawl e-commerce platforms with custom settings</p>
+        </div>
+
+        <div class="crawl-body">
+            <!-- Search Section -->
+            <div class="setting-group">
+                <h4><i class="fas fa-search"></i> Search Settings</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Search Keyword</label>
+                            <input type="text" class="form-control" id="keyword"
+                                   placeholder="Enter product name, e.g., 'laptop', 'smartphone'">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Number of Pages to Crawl</label>
+                            <input type="number" class="form-control" id="pages" value="10" min="5" max="20">
+                            <small class="text-muted">5-20 pages per platform</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Platform Selection -->
+            <div class="setting-group">
+                <h4><i class="fas fa-store"></i> Select Platforms</h4>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="platform-card" onclick="selectPlatform('amazon')" id="platform-amazon">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="checkbox-amazon" checked>
+                                <label class="form-check-label" for="checkbox-amazon">
+                                    <h5><i class="fab fa-amazon" style="color: #FF9900;"></i> Amazon</h5>
+                                </label>
+                            </div>
+                            <small class="text-muted">Global e-commerce</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="platform-card" onclick="selectPlatform('jd')" id="platform-jd">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="checkbox-jd" checked>
+                                <label class="form-check-label" for="checkbox-jd">
+                                    <h5><i class="fas fa-shopping-cart" style="color: #e31436;"></i> JD.com</h5>
+                                </label>
+                            </div>
+                            <small class="text-muted">Chinese e-commerce</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="platform-card" onclick="selectPlatform('both')" id="platform-both">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="checkbox-both" checked>
+                                <label class="form-check-label" for="checkbox-both">
+                                    <h5><i class="fas fa-globe" style="color: #007bff;"></i> Both Platforms</h5>
+                                </label>
+                            </div>
+                            <small class="text-muted">Amazon & JD.com</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Amazon Settings -->
+            <div class="setting-group" id="amazon-settings">
+                <h4><i class="fab fa-amazon" style="color: #FF9900;"></i> Amazon Advanced Settings</h4>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="amazon-proxy">
+                            <label class="form-check-label" for="amazon-proxy">Use Proxy</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="amazon-captcha">
+                            <label class="form-check-label" for="amazon-captcha">CAPTCHA Handling</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label class="form-label">Delay (seconds)</label>
+                            <input type="number" class="form-control" id="amazon-delay" value="3" min="1" max="10">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label class="form-label">Max Retries</label>
+                            <input type="number" class="form-control" id="amazon-retries" value="2" min="1" max="5">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JD.com Settings -->
+            <div class="setting-group" id="jd-settings">
+                <h4><i class="fas fa-shopping-cart" style="color: #e31436;"></i> JD.com Advanced Settings</h4>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="jd-proxy" checked>
+                            <label class="form-check-label" for="jd-proxy">Use Proxy</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="jd-captcha" checked>
+                            <label class="form-check-label" for="jd-captcha">CAPTCHA Handling</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label class="form-label">Delay (seconds)</label>
+                            <input type="number" class="form-control" id="jd-delay" value="5" min="2" max="15">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label class="form-label">Max Retries</label>
+                            <input type="number" class="form-control" id="jd-retries" value="3" min="1" max="5">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Global Settings -->
+            <div class="setting-group">
+                <h4><i class="fas fa-cogs"></i> Global Settings</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Request Timeout (seconds)</label>
+                            <input type="number" class="form-control" id="timeout" value="30" min="10" max="60">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Max Concurrent Crawlers</label>
+                            <input type="number" class="form-control" id="max-concurrent" value="3" min="1" max="10">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Buttons -->
+            <div class="text-center mt-4">
+                <button class="btn btn-crawl" onclick="startCrawl()" id="crawl-btn">
+                    <i class="fas fa-play"></i> Start Crawling
+                </button>
+                <button class="btn btn-secondary" onclick="resetSettings()">
+                    <i class="fas fa-redo"></i> Reset Settings
+                </button>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div class="loading" id="loading">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h4 class="mt-3">Crawling in progress...</h4>
+                <p id="crawl-status">Initializing crawlers...</p>
+                <div class="progress mt-3" style="height: 10px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                         id="progress-bar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Results Display -->
+            <div class="result-card" id="results" style="display: none;">
+                <h4><i class="fas fa-chart-line"></i> Crawl Results</h4>
+                <div id="results-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedPlatforms = ['amazon', 'jd'];
+
+    function selectPlatform(platform) {
+        const amazonCheckbox = document.getElementById('checkbox-amazon');
+        const jdCheckbox = document.getElementById('checkbox-jd');
+        const bothCheckbox = document.getElementById('checkbox-both');
+
+        if (platform === 'both') {
+            amazonCheckbox.checked = true;
+            jdCheckbox.checked = true;
+            bothCheckbox.checked = true;
+            selectedPlatforms = ['amazon', 'jd'];
+        } else if (platform === 'amazon') {
+            amazonCheckbox.checked = !amazonCheckbox.checked;
+            if (amazonCheckbox.checked) {
+                selectedPlatforms.push('amazon');
+            } else {
+                selectedPlatforms = selectedPlatforms.filter(p => p !== 'amazon');
+            }
+            bothCheckbox.checked = amazonCheckbox.checked && jdCheckbox.checked;
+        } else if (platform === 'jd') {
+            jdCheckbox.checked = !jdCheckbox.checked;
+            if (jdCheckbox.checked) {
+                selectedPlatforms.push('jd');
+            } else {
+                selectedPlatforms = selectedPlatforms.filter(p => p !== 'jd');
+            }
+            bothCheckbox.checked = amazonCheckbox.checked && jdCheckbox.checked;
+        }
+
+        // Update UI
+        updatePlatformCards();
+    }
+
+    function updatePlatformCards() {
+        const amazonCard = document.getElementById('platform-amazon');
+        const jdCard = document.getElementById('platform-jd');
+        const bothCard = document.getElementById('platform-both');
+
+        const amazonCheckbox = document.getElementById('checkbox-amazon');
+        const jdCheckbox = document.getElementById('checkbox-jd');
+        const bothCheckbox = document.getElementById('checkbox-both');
+
+        // Update card styles
+        amazonCard.classList.toggle('active', amazonCheckbox.checked);
+        jdCard.classList.toggle('active', jdCheckbox.checked);
+        bothCard.classList.toggle('active', bothCheckbox.checked);
+
+        // Show/hide platform settings
+        document.getElementById('amazon-settings').style.display =
+                amazonCheckbox.checked ? 'block' : 'none';
+        document.getElementById('jd-settings').style.display =
+                jdCheckbox.checked ? 'block' : 'none';
+    }
+
+    function startCrawl() {
+        const keyword = document.getElementById('keyword').value.trim();
+        const pages = parseInt(document.getElementById('pages').value);
+
+        if (!keyword) {
+            alert('Please enter a search keyword');
+            return;
+        }
+
+        if (selectedPlatforms.length === 0) {
+            alert('Please select at least one platform');
+            return;
+        }
+
+        // Disable button and show loading
+        const crawlBtn = document.getElementById('crawl-btn');
+        crawlBtn.disabled = true;
+        crawlBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Crawling...';
+
+        // Show loading indicator
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('results').style.display = 'none';
+
+        // Update progress bar
+        updateProgress(0);
+
+        // Prepare data
+        const crawlData = {
+            keyword: keyword,
+            pages: pages,
+            platforms: selectedPlatforms,
+            amazon_proxy: document.getElementById('amazon-proxy').checked,
+            amazon_captcha: document.getElementById('amazon-captcha').checked,
+            amazon_delay: parseInt(document.getElementById('amazon-delay').value),
+            amazon_retries: parseInt(document.getElementById('amazon-retries').value),
+            jd_proxy: document.getElementById('jd-proxy').checked,
+            jd_captcha: document.getElementById('jd-captcha').checked,
+            jd_delay: parseInt(document.getElementById('jd-delay').value),
+            jd_retries: parseInt(document.getElementById('jd-retries').value),
+            timeout: parseInt(document.getElementById('timeout').value),
+            max_concurrent: parseInt(document.getElementById('max-concurrent').value)
+        };
+
+        // Start crawl
+        fetch('/start_crawl', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(crawlData)
+        })
+                .then(response => response.json())
+                .then(data => {
+                    // Update progress to 100%
+                    updateProgress(100);
+
+                    // Show results
+                    showResults(data);
+
+                    // Re-enable button
+                    setTimeout(() => {
+                        crawlBtn.disabled = false;
+                        crawlBtn.innerHTML = '<i class="fas fa-play"></i> Start Crawling';
+                        document.getElementById('loading').style.display = 'none';
+                    }, 1000);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showResults({
+                        success: false,
+                        message: 'Crawl failed: ' + error.message
+                    });
+
+                    // Re-enable button
+                    crawlBtn.disabled = false;
+                    crawlBtn.innerHTML = '<i class="fas fa-play"></i> Start Crawling';
+                    document.getElementById('loading').style.display = 'none';
+                });
+    }
+
+    function updateProgress(percent) {
+        const progressBar = document.getElementById('progress-bar');
+        const statusText = document.getElementById('crawl-status');
+
+        progressBar.style.width = percent + '%';
+
+        if (percent < 25) {
+            statusText.textContent = 'Initializing crawlers...';
+        } else if (percent < 50) {
+            statusText.textContent = 'Starting platform crawlers...';
+        } else if (percent < 75) {
+            statusText.textContent = 'Collecting product data...';
+        } else if (percent < 100) {
+            statusText.textContent = 'Processing results...';
+        } else {
+            statusText.textContent = 'Crawl completed!';
+        }
+    }
+
+    function showResults(data) {
+        const resultsDiv = document.getElementById('results');
+        const contentDiv = document.getElementById('results-content');
+
+        if (data.success) {
+            contentDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <h5><i class="fas fa-check-circle"></i> ${data.message}</h5>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h1 class="display-4">${data.products_count}</h1>
+                                    <p class="card-text">Total Products</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h1 class="display-4">${data.amazon_products || 0}</h1>
+                                    <p class="card-text">Amazon Products</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h1 class="display-4">${data.jd_products || 0}</h1>
+                                    <p class="card-text">JD.com Products</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <p><strong>Platforms:</strong> ${data.platforms.join(', ')}</p>
+                        <p><strong>Pages Crawled:</strong> ${data.pages_used} per platform</p>
+                        <p><strong>Output:</strong> ${data.output_preview}</p>
+                    </div>
+                    <div class="mt-3">
+                        <a href="/" class="btn btn-primary">
+                            <i class="fas fa-home"></i> Go to Dashboard
+                        </a>
+                        <a href="/products" class="btn btn-success ms-2">
+                            <i class="fas fa-boxes"></i> View Products
+                        </a>
+                        <a href="/analysis" class="btn btn-info ms-2">
+                            <i class="fas fa-chart-bar"></i> View Analysis
+                        </a>
+                    </div>
+                `;
+        } else {
+            contentDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <h5><i class="fas fa-exclamation-circle"></i> Crawl Failed</h5>
+                        <p>${data.message}</p>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-warning" onclick="startCrawl()">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                    </div>
+                `;
+        }
+
+        resultsDiv.style.display = 'block';
+    }
+
+    function resetSettings() {
+        // Reset all form elements to defaults
+        document.getElementById('keyword').value = '';
+        document.getElementById('pages').value = '10';
+
+        // Reset platform selection
+        document.getElementById('checkbox-amazon').checked = true;
+        document.getElementById('checkbox-jd').checked = true;
+        document.getElementById('checkbox-both').checked = true;
+        selectedPlatforms = ['amazon', 'jd'];
+
+        // Reset Amazon settings
+        document.getElementById('amazon-proxy').checked = false;
+        document.getElementById('amazon-captcha').checked = false;
+        document.getElementById('amazon-delay').value = '3';
+        document.getElementById('amazon-retries').value = '2';
+
+        // Reset JD.com settings
+        document.getElementById('jd-proxy').checked = true;
+        document.getElementById('jd-captcha').checked = true;
+        document.getElementById('jd-delay').value = '5';
+        document.getElementById('jd-retries').value = '3';
+
+        // Reset global settings
+        document.getElementById('timeout').value = '30';
+        document.getElementById('max-concurrent').value = '3';
+
+        // Update UI
+        updatePlatformCards();
+
+        // Hide results
+        document.getElementById('results').style.display = 'none';
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+        updatePlatformCards();
+
+        // Add click handlers to checkboxes
+        document.getElementById('checkbox-amazon').addEventListener('click', function (e) {
+            e.stopPropagation();
+            selectPlatform('amazon');
+        });
+
+        document.getElementById('checkbox-jd').addEventListener('click', function (e) {
+            e.stopPropagation();
+            selectPlatform('jd');
+        });
+
+        document.getElementById('checkbox-both').addEventListener('click', function (e) {
+            e.stopPropagation();
+            selectPlatform('both');
+        });
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,45 +1,45 @@
 ============================================================
 📊 E-COMMERCE DATA ANALYSIS REPORT
 ============================================================
-Generated: 2026-02-02 19:51:38
+Generated: 2026-02-06 18:25:13
 Data Source: data/all_products.csv
-Total Products: 374
+Total Products: 452
 
 💰 PRICE DISTRIBUTION ANALYSIS
 ----------------------------------------
-Products Analyzed: 374
-Average Price: $1795.18
+Products Analyzed: 452
+Average Price: $1544.76
 Price Range: $0.00 - $31807.00
 
 😊 SENTIMENT ANALYSIS
 ----------------------------------------
-Texts Analyzed: 374
-Average Sentiment: 0.217
-Positive: 232
-Neutral: 32
-Negative: 110
+Texts Analyzed: 452
+Average Sentiment: 0.191
+Positive: 269
+Neutral: 41
+Negative: 142
 
 🏷️ BRAND & CATEGORY STATISTICS
 ----------------------------------------
 Top Brands:
-  Apple: 16 products, avg $799.80
-  Dell: 21 products, avg $605.82
-  HP: 20 products, avg $651.57
-  Lenovo: 15 products, avg $802.72
+  Apple: 17 products, avg $756.53
+  Dell: 25 products, avg $623.06
+  HP: 19 products, avg $618.56
+  Lenovo: 13 products, avg $677.56
   Microsoft: 1 products, avg $0.00
 
 Top Categories:
-  Electronics: 270 products
-  平板: 19 products
-  手机: 22 products
-  手表: 25 products
-  笔记本: 19 products
+  Electronics: 348 products
+  平板: 17 products
+  手机: 16 products
+  手表: 29 products
+  笔记本: 22 products
 
 📈 PRICE TREND ANALYSIS
 ----------------------------------------
 Days Analyzed: 30
-  amazon: Decreasing (-8.1% change)
-  jd: Increasing (-0.4% change)
+  amazon: Decreasing (-1.9% change)
+  jd: Decreasing (-9.7% change)
 
 📋 SUMMARY
 ----------------------------------------

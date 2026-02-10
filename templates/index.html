@@ -11,10 +11,18 @@
             background-color: #f8f9fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
         .navbar-brand {
             font-weight: bold;
             color: #0d6efd !important;
         }
+
+        .navbar-search {
+            flex-grow: 1;
+            max-width: 400px;
+            margin: 0 20px;
+        }
+
         .dashboard-header {
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             color: white;
@@ -22,48 +30,57 @@
             border-radius: 15px;
             margin-bottom: 2rem;
         }
+
         .stat-card {
             background: white;
             border-radius: 10px;
             padding: 1.5rem;
             margin-bottom: 1rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s;
         }
+
         .stat-card:hover {
             transform: translateY(-5px);
         }
+
         .stat-icon {
             font-size: 2rem;
             margin-bottom: 1rem;
         }
+
         .stat-value {
             font-size: 1.8rem;
             font-weight: bold;
             color: #2c3e50;
         }
+
         .stat-label {
             color: #7f8c8d;
             font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
+
         .card-header {
             background-color: #0d6efd;
             color: white;
             font-weight: bold;
         }
+
         .btn-primary {
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             border: none;
         }
+
         .chart-container {
             background: white;
             border-radius: 10px;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .footer {
             margin-top: 3rem;
             padding: 1.5rem;
@@ -71,260 +88,590 @@
             color: white;
             border-radius: 10px;
         }
+
+        .crawl-progress {
+            height: 25px;
+        }
+
+        .crawl-alert {
+            display: none;
+        }
+
+        .quick-search-box {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-chart-line"></i> E-commerce Analytics
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/">
-                            <i class="fas fa-home"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/products">
-                            <i class="fas fa-shopping-cart"></i> Products
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/monitoring">
-                            <i class="fas fa-bell"></i> Price Monitoring
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/recommendations">
-                            <i class="fas fa-robot"></i> Recommendations
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/analysis">
-                            <i class="fas fa-chart-bar"></i> Analysis
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/database">
-                            <i class="fas fa-database"></i> Database
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<!-- Navigation with ALL PAGES -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+            <i class="fas fa-chart-line"></i> E-commerce Analytics
+        </a>
 
-    <!-- Main Content -->
-    <div class="container mt-4">
-        <!-- Dashboard Header -->
-        <div class="dashboard-header text-center">
-            <h1><i class="fas fa-robot"></i> Intelligent E-commerce Data System</h1>
-            <p class="lead">Real-time product data collection, analysis, and visualization</p>
-            <div class="row mt-4">
-                <div class="col-md-3">
-                    <span class="badge bg-success fs-6 p-2">Amazon</span>
-                </div>
-                <div class="col-md-3">
-                    <span class="badge bg-danger fs-6 p-2">JD.com</span>
-                </div>
-                <div class="col-md-3">
-                    <span class="badge bg-info fs-6 p-2">Multi-platform</span>
-                </div>
-                <div class="col-md-3">
-                    <span class="badge bg-warning fs-6 p-2">Real-time</span>
-                </div>
+        <!-- NAVIGATION SEARCH BAR -->
+        <form class="d-flex navbar-search" method="GET" action="/products">
+            <div class="input-group">
+                <input type="text" class="form-control" name="search"
+                       placeholder="Search collected products..."
+                       aria-label="Search database">
+                <button class="btn btn-outline-light" type="submit" title="Search database">
+                    <i class="fas fa-search"></i>
+                </button>
             </div>
-        </div>
+        </form>
 
-        <!-- Stats Cards -->
-        <div class="row">
-            <div class="col-md-3">
-                <div class="stat-card text-center">
-                    <div class="stat-icon text-primary">
-                        <i class="fas fa-boxes"></i>
-                    </div>
-                    <div class="stat-value">{{ stats.total_products }}</div>
-                    <div class="stat-label">Total Products</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card text-center">
-                    <div class="stat-icon text-success">
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
-                    <div class="stat-value">${{ "%.2f"|format(stats.avg_price) }}</div>
-                    <div class="stat-label">Average Price</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card text-center">
-                    <div class="stat-icon text-warning">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div class="stat-value">{{ "%.2f"|format(stats.avg_rating) }}/5</div>
-                    <div class="stat-label">Average Rating</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card text-center">
-                    <div class="stat-icon text-info">
-                        <i class="fas fa-layer-group"></i>
-                    </div>
-                    <div class="stat-value">{{ stats.category_count }}</div>
-                    <div class="stat-label">Categories</div>
-                </div>
-            </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/products">
+                        <i class="fas fa-shopping-cart"></i> Products
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/monitoring">
+                        <i class="fas fa-bell"></i> Monitoring
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/analysis">
+                        <i class="fas fa-chart-bar"></i> Analysis
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/recommendations">
+                        <i class="fas fa-robot"></i> Recommendations
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/database">
+                        <i class="fas fa-database"></i> Database
+                    </a>
+                </li>
+            </ul>
         </div>
+    </div>
+</nav>
 
-        <!-- Charts Section -->
+<!-- Main Content -->
+<div class="container mt-4">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header text-center">
+        <h1><i class="fas fa-robot"></i> Intelligent E-commerce Data System</h1>
+        <p class="lead">Real-time product data collection, analysis, and visualization</p>
         <div class="row mt-4">
+            <div class="col-md-3">
+                <span class="badge bg-success fs-6 p-2">Amazon</span>
+            </div>
+            <div class="col-md-3">
+                <span class="badge bg-danger fs-6 p-2">JD.com</span>
+            </div>
+            <div class="col-md-3">
+                <span class="badge bg-info fs-6 p-2">Multi-platform</span>
+            </div>
+            <div class="col-md-3">
+                <span class="badge bg-warning fs-6 p-2">Real-time</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+<div class="row">
+    <div class="col-md-3">
+        <div class="stat-card text-center">
+            <div class="stat-icon text-primary">
+                <i class="fas fa-boxes"></i>
+            </div>
+            <div class="stat-value">{{ stats.total_products if stats.total_products else 0 }}</div>
+            <div class="stat-label">Total Products</div>
+        </div>
+    </div>
+<div class="col-md-3">
+<div class="stat-card text-center">
+    <div class="stat-icon text-success">
+        <i class="fas fa-dollar-sign"></i>
+    </div>
+<div class="stat-value">${{ "%.2f"|format(stats.avg_price) if stats.avg_price else "0.00" }}</div>
+    <div class="stat-label">Average Price</div>
+</div>
+</div>
+    <div class="col-md-3">
+        <div class="stat-card text-center">
+            <div class="stat-icon text-warning">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="stat-value">{{ "%.2f"|format(stats.avg_rating) if stats.avg_rating else "0.00" }}/5</div>
+            <div class="stat-label">Average Rating</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card text-center">
+            <div class="stat-icon text-info">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <div class="stat-value">{{ stats.category_count if stats.category_count else 0 }}</div>
+            <div class="stat-label">Categories</div>
+        </div>
+    </div>
+</div>
+
+    <!-- QUICK SEARCH BOX -->
+    <div class="quick-search-box">
+        <h5><i class="fas fa-search me-2"></i>Quick Search Database</h5>
+        <p class="text-muted mb-3">Search through {{ stats.total_products if stats.total_products else 0 }} collected
+            products</p>
+        <form method="GET" action="/products" class="row g-2">
             <div class="col-md-8">
-                <div class="chart-container">
-                    <h4><i class="fas fa-chart-bar"></i> Price Distribution</h4>
-                    <hr>
-                    {% if chart_files %}
-                        <img src="/static/charts/{{ chart_files[-1] }}" alt="Price Chart" class="img-fluid">
-                    {% else %}
-                        <p class="text-muted">No charts generated yet. Click "Generate Charts" below.</p>
-                    {% endif %}
-                </div>
+                <input type="text" class="form-control" name="search"
+                       placeholder="Enter product name, brand, or category...">
             </div>
-            <div class="col-md-4">
-                <div class="chart-container">
-                    <h4><i class="fas fa-info-circle"></i> Price Range</h4>
-                    <hr>
-                    <div class="list-group">
-                        <div class="list-group-item">
-                            <strong>Minimum Price:</strong> 
-                            <span class="float-end">${{ "%.2f"|format(stats.get('min_price', 0)) }}</span>
-                        </div>
-                        <div class="list-group-item">
-                            <strong>Maximum Price:</strong>
-                            <span class="float-end">${{ "%.2f"|format(stats.get('max_price', 0)) }}</span>
-                        </div>
-                        <div class="list-group-item">
-                            <strong>Price Range:</strong>
-                            <span class="float-end">${{ "%.2f"|format(stats.get('max_price', 0) - stats.get('min_price', 0)) }}</span>
-                        </div>
-                        <div class="list-group-item">
-                            <strong>Platforms:</strong> 
-                            <span class="float-end">{{ stats.platform_count }}</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="col-md-2">
+                <select class="form-select" name="platform">
+                    <option value="">All Platforms</option>
+                    <option value="Amazon">Amazon</option>
+                    <option value="JD.com">JD.com</option>
+                </select>
             </div>
-        </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search me-1"></i> Search
+                </button>
+            </div>
+        </form>
+    </div>
 
-        <!-- Actions -->
-        <div class="row mt-4">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-bolt"></i> Quick Actions
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <a href="/analysis" class="btn btn-primary btn-lg w-100 mb-2">
-                                    <i class="fas fa-chart-line"></i> View Analysis
-                                </a>
+    <!-- CRAWL PANEL - FIXED: 10-15 PAGES -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-spider me-2"></i> Live Web Crawler
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Collect New Data from Websites</h5>
+                    <p class="card-text">Search live websites and collect new product data</p>
+
+                    <form id="crawlForm" onsubmit="return startCrawling(event)">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="keyword" class="form-label">Search Keyword</label>
+                                <input type="text" class="form-control" id="keyword"
+                                       placeholder="What products to search for? (e.g., laptop, phone)"
+                                       required>
                             </div>
                             <div class="col-md-3">
-                                <a href="/products" class="btn btn-success btn-lg w-100 mb-2">
-                                    <i class="fas fa-search"></i> Search Products
-                                </a>
+                                <label for="pages" class="form-label">Pages per site</label>
+                                <input type="number" class="form-control" id="pages"
+                                       min="10" max="15" value="10" required>
+                                <small class="text-muted">10-15 pages (project requirement)</small>
                             </div>
                             <div class="col-md-3">
-                                <button onclick="generateCharts()" class="btn btn-warning btn-lg w-100 mb-2">
-                                    <i class="fas fa-sync"></i> Generate Charts
-                                </button>
-                            </div>
-                            <div class="col-md-3">
-                                <button onclick="refreshData()" class="btn btn-info btn-lg w-100 mb-2">
-                                    <i class="fas fa-redo"></i> Refresh Data
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-success w-100" id="crawlBtn">
+                                    <i class="fas fa-play me-1"></i> Start Crawling
                                 </button>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Instructions -->
-        <div class="row mt-4">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-question-circle"></i> How to Use
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <h5><i class="fas fa-crawler text-primary"></i> 1. Crawl Data</h5>
-                                <p>Run the crawler to collect product data from Amazon and JD.com</p>
-                            </div>
-                            <div class="col-md-3">
-                                <h5><i class="fas fa-search text-success"></i> 2. Search & Filter</h5>
-                                <p>Use the Products page to search and filter collected data</p>
-                            </div>
-                            <div class="col-md-3">
-                                <h5><i class="fas fa-chart-pie text-warning"></i> 3. Analyze</h5>
-                                <p>View detailed analysis and charts in the Analysis section</p>
-                            </div>
-                            <div class="col-md-3">
-                                <h5><i class="fas fa-database text-info"></i> 4. Database</h5>
-                                <p>Check database structure and data quality</p>
-                            </div>
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Note:</strong> Crawler requires 10-15 pages per website (Amazon + JD.com). This may
+                            take 3-5 minutes.
                         </div>
+                    </form>
+
+                    <!-- Progress Section -->
+                    <div id="progressSection" class="mt-4" style="display: none;">
+                        <h6><i class="fas fa-sync-alt me-2"></i>Crawling Progress</h6>
+                        <div class="progress crawl-progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                 id="progressBar" style="width: 0%"></div>
+                        </div>
+                        <div class="mt-2" id="progressText">
+                            Initializing crawler...
+                        </div>
+
+                        <div class="alert alert-info mt-3" id="statusMessage">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <span id="statusText">Preparing to crawl...</span>
+                        </div>
+                    </div>
+
+                    <!-- Results Section -->
+                    <div id="resultsSection" class="mt-4 crawl-alert">
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong id="resultsTitle">Crawling Complete!</strong>
+                            <div id="resultsDetails" class="mt-2"></div>
+                        </div>
+                        <button class="btn btn-primary w-100" onclick="location.reload()">
+                            <i class="fas fa-sync me-2"></i> Refresh Dashboard
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <div class="container">
-        <div class="footer text-center">
-            <p>Intelligent E-commerce Data Collection and Analysis System</p>
-            <p>Final Project - Python Web Crawler Practical Course</p>
-            <p class="text-muted">Data collected for educational purposes only</p>
+    <!-- Charts Section -->
+<div class="row mt-4">
+    <div class="col-md-8">
+        <div class="chart-container">
+            <h4><i class="fas fa-chart-bar"></i> Price Distribution</h4>
+            <hr>
+            {% if chart_files %}
+            <img src="/static/charts/{{ chart_files[-1] }}" alt="Price Chart" class="img-fluid">
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-chart-pie"></i>
+                <h5>No Charts Generated Yet</h5>
+                <p class="text-muted">Generate charts to visualize your data</p>
+                <button onclick="generateCharts()" class="btn btn-primary">
+                    <i class="fas fa-sync me-1"></i> Generate Charts
+                </button>
+            </div>
+            {% endif %}
         </div>
     </div>
+<div class="col-md-4">
+<div class="chart-container">
+    <h4><i class="fas fa-info-circle"></i> Price Range</h4>
+    <hr>
+<div class="list-group">
+<div class="list-group-item">
+    <strong>Minimum Price:</strong>
+<span class="float-end">${{ "%.2f"|format(stats.get('min_price', 0)) }}</span>
+</div>
+<div class="list-group-item">
+    <strong>Maximum Price:</strong>
+<span class="float-end">${{ "%.2f"|format(stats.get('max_price', 0)) }}</span>
+</div>
+<div class="list-group-item">
+    <strong>Price Range:</strong>
+<span class="float-end">${{ "%.2f"|format(stats.get('max_price', 0) - stats.get('min_price', 0)) }}</span>
+</div>
+    <div class="list-group-item">
+        <strong>Platforms:</strong>
+        <span class="float-end">{{ stats.platform_count if stats.platform_count else 0 }}</span>
+    </div>
+    <div class="list-group-item">
+        <strong>Monitored Products:</strong>
+        <span class="float-end">{{ stats.monitored_products if stats.monitored_products else 0 }}</span>
+    </div>
+</div>
+</div>
+</div>
+</div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function generateCharts() {
-            fetch('/generate_all_charts')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Charts generated successfully!');
-                        location.reload();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                });
-        }
+    <!-- Actions with ALL Navigation Links -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-bolt"></i> Quick Actions
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <a href="/products" class="btn btn-success btn-lg w-100 mb-2">
+                                <i class="fas fa-shopping-cart"></i> Products
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="/monitoring" class="btn btn-danger btn-lg w-100 mb-2">
+                                <i class="fas fa-bell"></i> Monitoring
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="/analysis" class="btn btn-primary btn-lg w-100 mb-2">
+                                <i class="fas fa-chart-bar"></i> Analysis
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="/recommendations" class="btn btn-info btn-lg w-100 mb-2">
+                                <i class="fas fa-robot"></i> Recommendations
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="/database" class="btn btn-secondary btn-lg w-100 mb-2">
+                                <i class="fas fa-database"></i> Database
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <button onclick="generateCharts()" class="btn btn-warning btn-lg w-100 mb-2">
+                                <i class="fas fa-sync"></i> Charts
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-        function refreshData() {
-            fetch('/refresh_data')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Data refreshed successfully!');
-                        location.reload();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                });
+<!-- Footer -->
+<div class="container">
+    <div class="footer text-center">
+        <p>Intelligent E-commerce Data Collection and Analysis System</p>
+        <p>Final Project - Python Web Crawler Practical Course</p>
+        <p class="text-muted">Data collected for educational purposes only</p>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let isCrawling = false;
+let progressInterval = null;
+
+function generateCharts() {
+    fetch('/generate_all_charts')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Successfully generated ' + data.charts.length + ' charts!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Network error: ' + error);
+            });
+}
+
+function refreshData() {
+    fetch('/refresh_data')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Data refreshed successfully!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Network error: ' + error);
+            });
+}
+
+// ==================== CRAWLING FUNCTIONS ====================
+function startCrawling(event) {
+    event.preventDefault();
+
+    if (isCrawling) {
+        alert('Crawling is already in progress. Please wait...');
+        return false;
+    }
+
+    const keyword = document.getElementById('keyword').value.trim();
+    const pages = parseInt(document.getElementById('pages').value);
+
+    if (!keyword) {
+        alert('Please enter a search keyword');
+        document.getElementById('keyword').focus();
+        return false;
+    }
+
+    if (pages < 10 || pages > 15) {
+        alert('Please enter pages between 10 and 15 (project requirement)');
+        return false;
+    }
+
+    isCrawling = true;
+    const crawlBtn = document.getElementById('crawlBtn');
+    crawlBtn.disabled = true;
+    crawlBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Crawling...';
+
+    // Show progress section
+    document.getElementById('progressSection').style.display = 'block';
+    document.getElementById('resultsSection').style.display = 'none';
+
+    // Reset progress
+    document.getElementById('progressBar').style.width = '0%';
+    document.getElementById('progressBar').className = 'progress-bar progress-bar-striped progress-bar-animated';
+    document.getElementById('progressText').textContent = 'Starting crawler...';
+        document.getElementById('statusText').textContent = `Searching for "${keyword}" on Amazon and JD.com...`;
+
+    // Start progress animation
+    let progress = 0;
+    if (progressInterval) clearInterval(progressInterval);
+    progressInterval = setInterval(() => {
+        if (progress < 90) {
+            progress += 5;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').textContent =
+                    `Crawling... ${progress}% (processing ${pages * 2} total pages)`;
         }
-    </script>
+    }, 3000);
+
+    // Send request to start crawl (non-blocking)
+    fetch('/start_crawl', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            keyword: keyword,
+            pages: pages
+        })
+    })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.job_id) {
+                    // Start checking status
+                    checkCrawlStatus(data.job_id, keyword, pages);
+                } else {
+                    throw new Error(data.message || 'Failed to start crawl');
+                }
+            })
+            .catch(error => {
+                clearInterval(progressInterval);
+                progressInterval = null;
+
+                document.getElementById('progressBar').classList.add('bg-danger');
+                document.getElementById('statusText').textContent = 'Failed to start crawl';
+                document.getElementById('progressText').textContent = 'Failed!';
+
+                showError('Crawling Failed', error.message);
+
+                isCrawling = false;
+                crawlBtn.disabled = false;
+                crawlBtn.innerHTML = '<i class="fas fa-play me-1"></i> Start Crawling';
+            });
+
+    return false;
+}
+
+function checkCrawlStatus(jobId, keyword, pages) {
+    fetch(`/check_crawl_status/${jobId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.status === 'running') {
+                    // Still running, check again in 3 seconds
+                    setTimeout(() => checkCrawlStatus(jobId, keyword, pages), 3000);
+                } else if (data.success && !data.status) {
+                    // Completed successfully
+                    clearInterval(progressInterval);
+                    progressInterval = null;
+
+                    document.getElementById('progressBar').style.width = '100%';
+                    document.getElementById('progressBar').classList.remove('progress-bar-animated');
+                    document.getElementById('progressBar').classList.add('bg-success');
+                    document.getElementById('progressText').textContent = 'Complete!';
+                    document.getElementById('statusText').textContent = 'Data processed successfully!';
+
+                    // Show results
+                    document.getElementById('resultsTitle').textContent = data.message;
+                    document.getElementById('resultsDetails').innerHTML = `
+                    <div>Collected: ${data.products_count || 0} products</div>
+                    <div>Keyword: "${keyword}"</div>
+                    <div>Pages: ${data.pages_used || pages} per website</div>
+                    <div class="mt-3">
+                        <a href="/products?search=${encodeURIComponent(keyword)}" class="btn btn-sm btn-outline-success me-2">
+                            <i class="fas fa-box me-1"></i> View Products
+                        </a>
+                        <a href="/analysis" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-chart-bar me-1"></i> View Charts
+                        </a>
+                    </div>
+                `;
+                    document.getElementById('resultsSection').style.display = 'block';
+
+                    // Auto-refresh after 3 seconds
+                    setTimeout(() => {
+                        location.reload();
+                    }, 3000);
+
+                    isCrawling = false;
+                    document.getElementById('crawlBtn').disabled = false;
+                    document.getElementById('crawlBtn').innerHTML = '<i class="fas fa-play me-1"></i> Start Crawling';
+
+                } else {
+                    // Error
+                    clearInterval(progressInterval);
+                    progressInterval = null;
+
+                    document.getElementById('progressBar').classList.add('bg-danger');
+                    document.getElementById('statusText').textContent = 'Error: ' + data.message;
+                    document.getElementById('progressText').textContent = 'Failed!';
+
+                    showError('Crawling Failed', data.message);
+
+                    isCrawling = false;
+                    document.getElementById('crawlBtn').disabled = false;
+                    document.getElementById('crawlBtn').innerHTML = '<i class="fas fa-play me-1"></i> Start Crawling';
+                }
+            })
+            .catch(error => {
+                // Network error, try again in 5 seconds
+                setTimeout(() => checkCrawlStatus(jobId, keyword, pages), 5000);
+            });
+}
+
+function showError(title, message) {
+    document.getElementById('resultsTitle').textContent = title;
+    document.getElementById('resultsDetails').innerHTML = `
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            ${message}
+        </div>
+    `;
+    document.getElementById('resultsSection').style.display = 'block';
+}
+
+// Auto-focus search input on page load
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('keyword').focus();
+
+    // Set default pages to 10
+    document.getElementById('pages').value = 10;
+});
+
+// Highlight current page in navigation
+document.addEventListener('DOMContentLoaded', function () {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+});
+</script>
 </body>
 </html>
